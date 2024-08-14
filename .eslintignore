@@ -1,0 +1,7 @@
+node_modules/
+public 
+.cache
+.env
+.eslintrc.js
+package-lock.json
+package.json
