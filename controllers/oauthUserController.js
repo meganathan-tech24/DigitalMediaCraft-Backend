@@ -1,4 +1,5 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 const commonHelper = require('../helpers/common.js');
@@ -6,35 +7,57 @@ const joiSchema = require('../helpers/joiSchema.js');
 const requestValidation = require('../helpers/requestValidation.js');
 const databaseModel = require('../model/index.js');
 const methods = {};
+require('dotenv').config();
 
-// New sign-up method
 methods.signUp = async (req, res) => {
 
-    const email = req.body.email.trim().toLowerCase();
+    const formattedEmail = commonHelper.emailToLowerCase(req.body.email);
 
-    // Check if user already exists
-    const userExists = await databaseModel.oauthUser.findOne({ email: email });
+    const userExists = await databaseModel.oauthUser.findOne({ email: formattedEmail });
     if (userExists) {
         return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Create new user
+    const salt = commonHelper.generateSalt();
+    const hash = commonHelper.hashPassword(req.body.password, salt);
+
     const model = {
-        email: email,
+        email: formattedEmail,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
+        salt: salt,
+        hash: hash,
     };
-
-    const salt = commonHelper.generateSalt();
-    model.salt = salt;
-    model.hash = commonHelper.hashPassword(req.body.password, salt);
 
     await databaseModel.oauthUser.create(model);
 
-    return res.json({ message: 'User signed up' });
+    return res.status(200).json({ message: 'User registration has been successfully completed' });
 };
 
 router.post('/signup', requestValidation(joiSchema.signup), methods.signUp);
+
+methods.signIn = async (req, res) => {
+
+    const { email, password } = req.body;
+    const formattedEmail = commonHelper.emailToLowerCase(email);
+
+    const user = await databaseModel.oauthUser.findOne({ email: formattedEmail }).lean();
+    if (!user) return res.status(400).json({ message: 'User not found' });
+
+    const hash = commonHelper.hashPassword(password, user.salt);
+    if (hash !== user.hash) {
+        return res.status(400).json({ message: 'Invalid password' });
+    }
+
+    const payload = { email: user.email, userId: user._id };
+
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+    return res.status(200).json({ message: 'User signed in successfully', data: { accessToken, refreshToken } });
+};
+
+router.post('/sign-in', requestValidation(joiSchema.signIn), methods.signIn);
 
 module.exports.methods = methods;
 module.exports.router = router;

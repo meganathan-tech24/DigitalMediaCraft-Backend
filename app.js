@@ -86,7 +86,7 @@ mongoose.connect(process.env.MONGODB_URI, config.serverOptions)
             if (app.get('env') === 'development') {
                 console.error(err.stack);
                 res.status(err.status || 500);
-                res.json({ message: err.message, error: err });
+                res.json({ message: 'Something went wrong' , error : err.message });
             } else {
                 next(err);
             }
@@ -96,7 +96,7 @@ mongoose.connect(process.env.MONGODB_URI, config.serverOptions)
         app.use((err, req, res, next) => {
             console.error(err.message); // Log only the error message in production
             res.status(err.status || 500);
-            res.json({ message: 'Something went wrong' });
+            res.json({ message: 'Something went wrong' , error : err.message });
         });
 
         // Start server

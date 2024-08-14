@@ -1,27 +1,27 @@
-const Joi = require('joi');
-
 module.exports = function (schema, isStrict = true, useNext = false) {
-    return function (req, res, next) {
-        const model = Joi.validate(req.body, schema, { abortEarly: false, allowUnknown: !isStrict });
-        if (model.error) {
-            const modelState = {
-                error: model.error.details,
-                valid: false
-            };
 
+    return function (req, res, next) {
+        const { error, value } = schema.validate(req.body, {
+            abortEarly: false,
+            allowUnknown: !isStrict
+        });
+
+        const modelState = {
+            error: error ? error.details : null,
+            valid: !error
+        };
+
+        if (error) {
             if (useNext) {
                 res.locals.modelState = modelState;
                 res.locals.model = null;
                 return next();
-            }
-            else
+            } else {
                 return res.status(400).json(modelState);
-        }
-        else {
-            res.locals.model = model.value;
-            res.locals.modelState = {
-                valid: true
-            };
+            }
+        } else {
+            res.locals.model = value;
+            res.locals.modelState = modelState;
             return next();
         }
     };

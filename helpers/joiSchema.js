@@ -9,4 +9,9 @@ methods.signup = joi.object().keys({
     lastName: joi.string().required()
 });
 
+methods.signIn = joi.object().keys({
+    email: joi.string().email().required(),
+    password: joi.string().min(6).required()
+});
+
 module.exports = methods;
