@@ -15,7 +15,7 @@ methods.signUp = async (req, res) => {
 
     const userExists = await databaseModel.oauthUser.findOne({ email: formattedEmail });
     if (userExists) {
-        return res.status(400).json({ message: 'User already exists' });
+        return res.status(400).json({ status: false, message: 'Account with this email already exists. Please log in or use a different email.' });
     }
 
     const salt = commonHelper.generateSalt();
@@ -31,7 +31,7 @@ methods.signUp = async (req, res) => {
 
     await databaseModel.oauthUser.create(model);
 
-    return res.status(200).json({ message: 'User registration has been successfully completed' });
+    return res.status(200).json({ status: true, message: 'Account created successfully. You can now log in.' });
 };
 
 router.post('/signup', requestValidation(joiSchema.signup), methods.signUp);
@@ -42,11 +42,11 @@ methods.signIn = async (req, res) => {
     const formattedEmail = commonHelper.emailToLowerCase(email);
 
     const user = await databaseModel.oauthUser.findOne({ email: formattedEmail }).lean();
-    if (!user) return res.status(400).json({ message: 'User not found' });
+    if (!user) return res.status(400).json({ status: false, message: 'No account found with the provided email address.' });
 
     const hash = commonHelper.hashPassword(password, user.salt);
     if (hash !== user.hash) {
-        return res.status(400).json({ message: 'Invalid password' });
+        return res.status(400).json({ status: false, message: 'Incorrect password. Please try again.' });
     }
 
     const payload = { email: user.email, userId: user._id };
@@ -54,7 +54,7 @@ methods.signIn = async (req, res) => {
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
     const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30d' });
 
-    return res.status(200).json({ message: 'User signed in successfully', data: { accessToken, refreshToken } });
+    return res.status(200).json({ status: true, message: 'Login successful', data: { accessToken, refreshToken } });
 };
 
 router.post('/sign-in', requestValidation(joiSchema.signIn), methods.signIn);

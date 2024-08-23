@@ -17,12 +17,22 @@ const routeManager = require('./routes/manager');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Middleware for CORS headers
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('X-Frame-Options', 'SAMEORIGIN');
+    next();
+});
+
+// Other middlewares
 app.use(favicon(path.join(__dirname, 'public', 'calendar.png')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(morgan('dev')); // Log HTTP requests
 
+// View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -72,8 +82,6 @@ mongoose.connect(process.env.MONGODB_URI, config.serverOptions)
         // Catch 404 and forward to error handler
         app.use((req, res, next) => {
             console.log('404 error:', req.url);
-
-            // Render the 404 template
             res.status(404).render('404', {
                 title: 'Page Not Found',
                 message: 'The page you are looking for does not exist.',
@@ -86,7 +94,7 @@ mongoose.connect(process.env.MONGODB_URI, config.serverOptions)
             if (app.get('env') === 'development') {
                 console.error(err.stack);
                 res.status(err.status || 500);
-                res.json({ message: 'Something went wrong' , error : err.message });
+                res.json({ message: 'Something went wrong', error: err.message });
             } else {
                 next(err);
             }
@@ -96,7 +104,7 @@ mongoose.connect(process.env.MONGODB_URI, config.serverOptions)
         app.use((err, req, res, next) => {
             console.error(err.message); // Log only the error message in production
             res.status(err.status || 500);
-            res.json({ message: 'Something went wrong' , error : err.message });
+            res.json({ message: 'Something went wrong', error: err.message });
         });
 
         // Start server

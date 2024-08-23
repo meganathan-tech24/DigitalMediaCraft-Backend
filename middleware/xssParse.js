@@ -10,22 +10,27 @@ const xssOptions = {
 };
 
 function xssMiddleware(req, res, next) {
-        req.body = sanitize(req.body);
-        req.query = sanitize(req.query);
-        req.params = sanitize(req.params);
+    req.body = sanitize(req.body);
+    req.query = sanitize(req.query);
+    req.params = sanitize(req.params);
 
     next();
 }
 
 function sanitize(value) {
-    if (_.isArray(value)) {
+
+    if (Array.isArray(value)) {
         return value.map(sanitize);
-    } else if (_.isObject(value)) {
-        return _.mapValues(value, sanitize);
-    } else if (_.isString(value)) {
-        return xss(value, xssOptions);
+    } else if (typeof value === 'object') {
+        const sanitized = {};
+        for (const key in value) {
+            if (Object.prototype.hasOwnProperty.call(value, key)) {
+                sanitized[key] = (_.isBoolean(value[key]) || _.isNumber(value[key]) || _.isNull(value[key])) ? value[key] : sanitize(value[key]);
+            }
+        }
+        return sanitized;
     } else {
-        return value;
+        return (_.isBoolean(value) || _.isNumber(value)) ? value : xss(value, xssOptions);
     }
 }
 
