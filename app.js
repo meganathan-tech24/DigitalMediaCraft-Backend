@@ -10,9 +10,13 @@ const favicon = require('serve-favicon');
 
 require('dotenv').config();
 const config = require('./common/config');
+const OAuth = require('./middleware/OAuth.js');
 const { xssMiddleware } = require('./middleware/xssParse');
 const apiRoutes = require('./routes/api.js');
 const routeManager = require('./routes/manager');
+
+// Initialize Express app
+const oauth  = new OAuth();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -75,9 +79,9 @@ mongoose.connect(process.env.MONGODB_URI, config.serverOptions)
         const v1Router = express.Router();
         await routeManager.register(v1Router, apiRoutes.v1);
 
-        // Use API Router
-        app.use('/api/v1', v1Router);
+        app.use('/oauth', require('./controllers/oauthUserController').router);
         app.use('/api', v1Router);
+        app.use('/api/*', oauth.authorize);
 
         // Catch 404 and forward to error handler
         app.use((req, res, next) => {
