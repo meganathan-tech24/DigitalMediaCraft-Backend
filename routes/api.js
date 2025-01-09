@@ -3,6 +3,10 @@ module.exports = {
         {
             path: '/oauth',
             controller: '../controllers/oauthUserController.js'
+        },
+        {
+            path: '/digital-media',
+            controller: '../controllers/mediaConnection.js'
         }
     ]
 };

@@ -33,7 +33,7 @@ OAuth.prototype.authorize = async function (req, res, next) {
 
     // Extract the Authorization header
     const authHeader = req.headers['authorization'];
-    if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
+    if (!authHeader || !authHeader.toLowerCase().startsWith('bearer')) {
         return res.status(401).json({ status: false, message: 'Unauthorized' });
     }
 

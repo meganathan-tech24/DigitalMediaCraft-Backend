@@ -10,14 +10,4 @@ methods.generateSalt = function () {
     return crypto.randomBytes(16).toString('hex');
 };
 
-methods.isValidEmail = function (email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-};
-
-methods.emailToLowerCase = function (email) {
-    return email.trim().toLowerCase();
-};
-
-
 module.exports = methods;

@@ -2,16 +2,32 @@ const joi = require('joi');
 
 const methods = {};
 
+const mediaTypes = ['facebook_page_media'];
+
+// OAuth User Controller Joi Schema
+
 methods.signup = joi.object().keys({
-    email: joi.string().email().required(),
+    email: joi.string().email().required().lowercase().trim(),
     password: joi.string().min(6).required(),
     firstName: joi.string().required(),
     lastName: joi.string().required()
 });
 
 methods.signIn = joi.object().keys({
-    email: joi.string().email().required(),
+    email: joi.string().email().required().lowercase().trim(),
     password: joi.string().min(6).required()
+});
+
+// Media Connection Controller Joi Schema
+
+methods.addMediaConnection = joi.object().keys({
+    type: joi.string().valid(...mediaTypes).required(),
+    accounts: joi.array(),
+    user: joi.object()
+});
+
+methods.deleteMediaConnection = joi.object().keys({
+    type: joi.string().valid(...mediaTypes).required()
 });
 
 module.exports = methods;
