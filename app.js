@@ -15,17 +15,19 @@ const { xssMiddleware } = require('./middleware/xssParse');
 const apiRoutes = require('./routes/api.js');
 const routeManager = require('./routes/manager');
 
-// Initialize Express app
-const oauth  = new OAuth();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, config.serverOptions)
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
 // Middleware for CORS headers
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.header('X-Frame-Options', 'SAMEORIGIN');
     next();
 });
@@ -33,8 +35,9 @@ app.use(function (req, res, next) {
 // Other middlewares
 app.use(favicon(path.join(__dirname, 'public', 'social-media-marketing.png')));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.json());
-app.use(morgan('dev')); // Log HTTP requests
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true, parameterLimit: 10000000 }));
+app.use(morgan('dev'));
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -63,15 +66,9 @@ app.use(session({
 // XSS protection
 app.use(xssMiddleware);
 
-// MongoDB connection options
-if (process.env.MONGODB_DEBUG === 'true') {
-    mongoose.set('debug', true);
-}
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, config.serverOptions)
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB connection error:', err));
+// Initialize Express app
+const oauth = new OAuth();
+app.use('/api/*', oauth.authorize.bind(oauth));
 
 // Initialize API Router and Register Routes
 (async () => {
@@ -81,7 +78,6 @@ mongoose.connect(process.env.MONGODB_URI, config.serverOptions)
 
         app.use('/oauth', require('./controllers/oauthUserController').router);
         app.use('/api', v1Router);
-        app.use('/api/*', oauth.authorize);
 
         // Catch 404 and forward to error handler
         app.use((req, res, next) => {

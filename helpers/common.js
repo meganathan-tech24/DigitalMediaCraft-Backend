@@ -9,5 +9,5 @@ methods.hashPassword = function (password, salt) {
 methods.generateSalt = function () {
     return crypto.randomBytes(16).toString('hex');
 };
-
+    
 module.exports = methods;

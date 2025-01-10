@@ -11,10 +11,7 @@ class OAuth {
             return new OAuth(options);
         }
 
-        this.config = {};
-
-        // Attach models from context
-        this.config.models = context;
+        this.config = { models: context };
     }
 }
 
@@ -39,25 +36,25 @@ OAuth.prototype.authorize = async function (req, res, next) {
 
     // Extract and validate the token
     const token = authHeader.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ status: false, message: 'Unauthorized' });
+    if (!token || token === 'null') {
+        return res.status(401).json({ status: false, message: 'Unauthorized', error: 'invalid_token' });
     }
 
     // Decode the token using the JWT secret
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded?.userId || !mongoose.isObjectIdOrHexString(decoded.userId)) {
-        return res.status(400).json({ status: false, message: 'Invalid token.' });
+        return res.status(400).json({ status: false, message: 'Invalid token.', error: 'invalid_token' });
     }
 
     // Check if the user exists in the database
     const oauthUser = await this.config.models.oauthUser.findById(decoded.userId).lean();
     if (!oauthUser) {
-        return res.status(400).json({ status: false, message: 'Invalid token.' });
+        return res.status(400).json({ status: false, message: 'Invalid token.', error: 'invalid_token' });
     }
 
     // Check token expiration
     if (decoded.exp < Math.floor(Date.now() / 1000)) {
-        return res.status(400).json({ status: false, message: 'Token expired.' });
+        return res.status(400).json({ status: false, message: 'Token expired.', error: 'invalid_token' });
     }
 
     // Attach user to response locals for downstream access

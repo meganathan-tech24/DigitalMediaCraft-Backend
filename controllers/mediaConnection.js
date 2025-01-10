@@ -15,7 +15,7 @@ methods.getMediaConnection = async (req, res) => {
 
     const mediaConnections = await databaseModel.mediaConnection.find({ userId: user._id }, { type: 1, accounts: 1 }).lean();
 
-    const data = mediaConnections?.length ? _.groupBy(mediaConnections, 'type') : {};
+    const data = mediaConnections?.length ? _.keyBy(mediaConnections, 'type') : {};
 
     return res.status(200).json({ status: true, data: data });
 };
@@ -34,7 +34,7 @@ methods.addMediaConnection = async (req, res) => {
     };
 
     await databaseModel.mediaConnection.create(data);
-    return res.status(200).json({ status: true, message: 'Connection added successfully' });
+    return res.status(200).json({ status: true, message: 'Channel has been successfully connected.' });
 };
 
 methods.deleteMediaConnection = async (req, res) => {
@@ -48,12 +48,11 @@ methods.deleteMediaConnection = async (req, res) => {
 
     await databaseModel.mediaConnection.deleteOne({ userId: userId, type: type });
 
-    return res.status(200).json({ status: true, message: 'Connection deleted successfully' });
-
+    return res.status(200).json({ status: true, message: 'Channel has been successfully disconnected.' });
 };
 
 router.get('/', methods.getMediaConnection);
-router.post('/connect', methods.addMediaConnection);
+router.post('/connect', validate(joiSchema.addMediaConnection), methods.addMediaConnection);
 router.delete('/disconnect', validate(joiSchema.deleteMediaConnection), methods.deleteMediaConnection);
 
 module.exports.methods = methods;
