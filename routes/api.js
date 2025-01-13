@@ -1,3 +1,4 @@
+
 module.exports = {
     v1: [
         {
@@ -7,6 +8,10 @@ module.exports = {
         {
             path: '/digital-media',
             controller: '../controllers/mediaConnection.js'
+        },
+        {
+            path: '/post',
+            controller: '../controllers/postManagementController.js'
         }
     ]
 };

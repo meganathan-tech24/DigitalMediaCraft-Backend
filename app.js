@@ -35,6 +35,7 @@ app.use(function (req, res, next) {
 // Other middlewares
 app.use(favicon(path.join(__dirname, 'public', 'social-media-marketing.png')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true, parameterLimit: 10000000 }));
 app.use(morgan('dev'));

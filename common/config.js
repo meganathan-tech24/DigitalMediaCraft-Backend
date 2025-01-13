@@ -8,4 +8,6 @@ config.serverOptions = {
     socketTimeoutMS: 470000
 };
 
+config.normalize = (path) => path.replace(/\\/g, '/');
+
 module.exports = config;
