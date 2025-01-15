@@ -33,9 +33,11 @@ methods.deleteMediaConnection = joi.object().keys({
 // Post Management Controller Joi Schema
 
 methods.createPost = joi.object().keys({
-    title: joi.string().required(),
-    description: joi.string().required(),
+    pageId: joi.string().required(),
+    pageName: joi.string().required(),
+    pageProfile: joi.string().required(),
     files: joi.array().items(joi.string()).required(),
+    message: joi.string().required(),
     status: joi.string().valid('drafted', 'published', 'scheduled').required(),
 });
 

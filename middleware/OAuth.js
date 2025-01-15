@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
-const context = require('../model');
+const databaseModel = require('../model');
 require('dotenv').config();
 
 class OAuth {
@@ -11,7 +11,7 @@ class OAuth {
             return new OAuth(options);
         }
 
-        this.config = { models: context };
+        this.config = { models: databaseModel };
     }
 }
 
