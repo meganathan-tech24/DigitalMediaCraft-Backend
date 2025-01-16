@@ -10,6 +10,8 @@ const socialMediaPostSchema = new Schema({
     pageProfile: String,
     externalLink: String,
     externalPostId: String,
+    scheduledAt: String,
+    postHistory: Array,
 }, { timestamps: true });
 
 module.exports = socialMediaPostSchema;

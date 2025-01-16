@@ -1,4 +1,6 @@
 const joi = require('joi');
+const { times } = require('lodash');
+const { token } = require('morgan');
 
 const methods = {};
 
@@ -30,6 +32,10 @@ methods.deleteMediaConnection = joi.object().keys({
     type: joi.string().valid(...mediaTypes).required()
 });
 
+methods.exchange = joi.object().keys({
+    token: joi.string().required(),
+});
+
 // Post Management Controller Joi Schema
 
 methods.createPost = joi.object().keys({
@@ -39,6 +45,12 @@ methods.createPost = joi.object().keys({
     files: joi.array().items(joi.string()).required(),
     message: joi.string().required(),
     status: joi.string().valid('drafted', 'published', 'scheduled').required(),
+});
+
+methods.statusChange = joi.object().keys({
+    postId: joi.string().required(),
+    status: joi.string().valid('published', 'scheduled').required(),
+    scheduledAt: joi.string().optional(),
 });
 
 module.exports = methods;

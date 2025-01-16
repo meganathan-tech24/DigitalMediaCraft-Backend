@@ -21,7 +21,6 @@ module.exports = {
     'no-unreachable': 'error',
     'quotes': ['error', 'single'], // Use single quotes
     'semi': ['error', 'always'], // Enforce semicolons
-    'camelcase': ['error', { properties: 'always' }],
     'eqeqeq': ['error', 'always'], // Enforce === and !==
     'consistent-return': 'error',
     'no-param-reassign': ['off'], // Disable rule for reassigning function parameters
