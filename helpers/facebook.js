@@ -1,6 +1,6 @@
 const axios = require('axios');
 const _ = require('lodash');
-const moment = require('moment');
+const dayjs = require('dayjs');
 
 const helper = require('./common.js');
 const databaseModel = require('../model/index.js');
@@ -60,7 +60,7 @@ methods.facebookPost = async (params) => {
             }
 
             // Set the scheduled publish time to 5 minutes from now
-            payload['scheduled_publish_time'] = moment().add(10, 'days').utc().unix();
+            payload['scheduled_publish_time'] = dayjs().add(10, 'days').utc().unix();
         }
 
         // Post to Facebook
