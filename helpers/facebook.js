@@ -1,6 +1,6 @@
 const axios = require('axios');
-const _ = require('lodash');
 const dayjs = require('dayjs');
+const _ = require('lodash');
 
 const helper = require('./common.js');
 const databaseModel = require('../model/index.js');
@@ -49,7 +49,7 @@ methods.facebookPost = async (params) => {
         const payload = {
             message: socialMediaPost.message,
             // link: `${BACKEND_API_URL}/${postFile}`,
-            link: 'https://images.unsplash.com/photo-1736695454593-421a67c6b627',
+            link: 'https://images.pexels.com/photos/789555/pexels-photo-789555.jpeg',
             published: !params['published'],
         };
 
@@ -79,7 +79,7 @@ methods.facebookPost = async (params) => {
 
         const postDetails = await methods.facebookPostDetails(postRequest);
 
-        return { status: true, message: 'Post published successfully', data: postDetails };
+        return { status: true, message: 'Post published successfully', data: postDetails.data };
 
     } catch (error) {
         console.log(error);

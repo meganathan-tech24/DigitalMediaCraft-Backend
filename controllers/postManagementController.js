@@ -74,7 +74,7 @@ methods.statusChange = async (req, res) => {
         if (status === 'published') {
 
             // Publish the post
-            const response = await facebook.facebookPost(postId, userId);
+            const response = await facebook.facebookPost({ postId, userId });
 
             if (!response?.status) return res.status(500).json({ status: false, message: response.message });
             console.log('Facebook post response:', JSON.stringify(response));
