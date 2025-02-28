@@ -22,20 +22,12 @@ methods.signUp = async (req, res) => {
     const salt = commonHelper.generateSalt();
     const hash = commonHelper.hashPassword(password, salt);
 
-    const model = {
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        salt: salt,
-        hash: hash,
-    };
+    const model = { email, firstName, lastName, salt, hash };
 
     await databaseModel.oauthUser.create(model);
 
     return res.status(200).json({ status: true, message: 'Account created successfully. You can now log in.' });
 };
-
-router.post('/signup', validate(joiSchema.signup), methods.signUp);
 
 methods.signIn = async (req, res) => {
 
@@ -58,6 +50,7 @@ methods.signIn = async (req, res) => {
 };
 
 router.post('/sign-in', validate(joiSchema.signIn), methods.signIn);
+router.post('/signup', validate(joiSchema.signup), methods.signUp);
 
 module.exports.methods = methods;
 module.exports.router = router;

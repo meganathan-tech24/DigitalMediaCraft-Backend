@@ -48,11 +48,6 @@ OAuth.prototype.authorize = async function (req, res, next) {
             return res.status(400).json({ status: false, message: 'Invalid token.', error: 'invalid_token' });
         }
 
-        // Validate the decoded token structure
-        if (!decoded?.userId || !mongoose.isObjectIdOrHexString(decoded.userId)) {
-            return res.status(400).json({ status: false, message: 'Invalid token.', error: 'invalid_token' });
-        }
-
         // Check if the user exists in the database
         const oauthUser = await this.config.models.oauthUser.findById(decoded.userId).lean();
         if (!oauthUser) {
