@@ -36,9 +36,9 @@ methods.create = async (req, res) => {
             status: post.status || 'draft',
         };
 
-        await databaseModel.socialMediaPost.create(model);
+        const data = await databaseModel.socialMediaPost.create(model);
 
-        return res.status(200).json({ status: true, message: 'Post created successfully' });
+        return res.status(200).json({ status: true, message: 'Post created successfully', data });
     } catch (error) {
         console.error('Error creating post:', error);
         return res.status(500).json({ status: false, message: 'Post creation failed' });

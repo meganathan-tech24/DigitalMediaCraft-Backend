@@ -48,8 +48,8 @@ methods.facebookPost = async (params) => {
 
         const payload = {
             message: socialMediaPost.message,
-            // link: `${BACKEND_API_URL}/${postFile}`,
-            link: 'https://images.pexels.com/photos/789555/pexels-photo-789555.jpeg',
+            link: `${BACKEND_API_URL}/${postFile}`,
+            // link: 'https://images.pexels.com/photos/789555/pexels-photo-789555.jpeg',
             published: !params['published'],
         };
 
