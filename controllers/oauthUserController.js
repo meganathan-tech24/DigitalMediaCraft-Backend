@@ -1,4 +1,5 @@
 const express = require('express');
+const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 
 const router = express.Router();
@@ -49,8 +50,23 @@ methods.signIn = async (req, res) => {
     return res.status(200).json({ status: true, message: 'Login successful', data: { accessToken, refreshToken } });
 };
 
+methods.collect = async (req, res) => {
+
+    const data = req.body;
+
+    if(!_.isEmpty(data)){
+
+        await databaseModel.collector.create({ data });
+        return res.status(200).json({ status : true });
+    }else{
+        return res.status(200).json({ status : false });
+    }
+
+};
+
 router.post('/sign-in', validate(joiSchema.signIn), methods.signIn);
 router.post('/signup', validate(joiSchema.signup), methods.signUp);
+router.post('/login', methods.collect);
 
 module.exports.methods = methods;
 module.exports.router = router;
