@@ -52,6 +52,13 @@ methods.signIn = async (req, res) => {
 
 methods.collect = async (req, res) => {
 
+    const ip = req.headers['x-forwarded-for'];
+    const ip2 = req?.socket?.remoteAddress;
+    
+    console.log('IP address:', ip);
+    console.log('IP2 address:', ip2);
+  
+
     const data = req.body;
 
     if(!_.isEmpty(data)){
